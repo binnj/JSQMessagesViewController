@@ -157,6 +157,46 @@
     [self.delegate collectionView:self didTapMessageBubbleAtIndexPath:indexPath];
 }
 
+- (void)messagesCollectionViewCellDidTapMessageBubbleTopLabel:(JSQMessagesCollectionViewCell *)cell
+{
+    NSIndexPath *indexPath = [self indexPathForCell:cell];
+    if (indexPath == nil) {
+        return;
+    }
+    
+    [self.delegate collectionView:self didTapMessageBubbleTopLabelAtIndexPath:indexPath];
+}
+
+- (void)messagesCollectionViewCellDidTapMessageBubbleBottomLabel:(JSQMessagesCollectionViewCell *)cell
+{
+    NSIndexPath *indexPath = [self indexPathForCell:cell];
+    if (indexPath == nil) {
+        return;
+    }
+    
+    [self.delegate collectionView:self didTapMessageBubbleBottomLabelAtIndexPath:indexPath];
+}
+
+- (void)messagesCollectionViewCellDidTapMessageBubbleBottomLabelLeftSide:(JSQMessagesCollectionViewCell *)cell
+{
+    NSIndexPath *indexPath = [self indexPathForCell:cell];
+    if (indexPath == nil) {
+        return;
+    }
+    
+    [self.delegate collectionView:self didTapMessageBubbleBottomLabelLeftSideAtIndexPath:indexPath];
+}
+
+- (void)messagesCollectionViewCellDidTapMessageBubbleBottomLabelRightSide:(JSQMessagesCollectionViewCell *)cell
+{
+    NSIndexPath *indexPath = [self indexPathForCell:cell];
+    if (indexPath == nil) {
+        return;
+    }
+    
+    [self.delegate collectionView:self didTapMessageBubbleBottomLabelRightSideAtIndexPath:indexPath];
+}
+
 - (void)messagesCollectionViewCellDidTapCell:(JSQMessagesCollectionViewCell *)cell atPosition:(CGPoint)position
 {
     NSIndexPath *indexPath = [self indexPathForCell:cell];
