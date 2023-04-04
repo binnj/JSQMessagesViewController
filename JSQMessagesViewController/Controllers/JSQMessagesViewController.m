@@ -446,19 +446,23 @@ static void * kJSQMessagesKeyValueObservingContext = &kJSQMessagesKeyValueObserv
     //  possibly a UIKit bug, see #480 on GitHub
     NSUInteger finalRow = MAX(0, [self.collectionView numberOfItemsInSection:0] - 1);
     NSIndexPath *finalIndexPath = [NSIndexPath indexPathForItem:finalRow inSection:0];
+    
+    /*
+     *  Chat used to determine whether or not to scroll to the top or bottom based on cell size, but scrolling to "top" was causing messages to show up behind the keyboard
+     *  so now we always scroll to bottom, leaving previous code here for now
+     *
     CGSize finalCellSize = [self.collectionView.collectionViewLayout sizeForItemAtIndexPath:finalIndexPath];
-
     CGFloat maxHeightForVisibleMessage = CGRectGetHeight(self.collectionView.bounds) - self.collectionView.contentInset.top - CGRectGetHeight(self.inputToolbar.bounds);
-
     UICollectionViewScrollPosition scrollPosition = (finalCellSize.height > maxHeightForVisibleMessage) ? UICollectionViewScrollPositionBottom : UICollectionViewScrollPositionTop;
+     */
 
     if (animated) {
         [self.collectionView scrollToItemAtIndexPath:finalIndexPath
-                                    atScrollPosition:scrollPosition
+                                    atScrollPosition:UICollectionViewScrollPositionBottom//scrollPosition
                                             animated:animated];
     }
     else {
-        [self.collectionView setContentOffset:CGPointMake(0, 44+collectionViewContentHeight-(self.collectionView.bounds.size.height))];
+        [self.collectionView setContentOffset:CGPointMake(0, self.bottomLayoutGuide.length+44+collectionViewContentHeight-(self.collectionView.bounds.size.height))];
     }
 }
 
@@ -545,7 +549,7 @@ static void * kJSQMessagesKeyValueObservingContext = &kJSQMessagesKeyValueObserv
         else
         {
             cell.textView.text = nil;
-            cell.textView.attributedText = [[NSAttributedString alloc] initWithString:[messageItem text] attributes:@{ NSFontAttributeName : collectionView.collectionViewLayout.messageBubbleFont }];
+            cell.textView.attributedText = [[NSAttributedString alloc] initWithString:([messageItem text] ?: @"") attributes:@{ NSFontAttributeName : collectionView.collectionViewLayout.messageBubbleFont }];
         }
         NSParameterAssert(cell.textView.text != nil);
 
@@ -915,13 +919,10 @@ didLoadLabelTextChange:(NSString *)text {
 
 - (void)keyboardController:(JSQMessagesKeyboardController *)keyboardController keyboardDidChangeFrame:(CGRect)keyboardFrame
 {
-    if (![self.inputToolbar.contentView.textView isFirstResponder] && self.toolbarBottomLayoutGuide.constant == 0.0f) {
-        return;
+    CGFloat heightFromBottom = MAX(0.0f, CGRectGetMaxY(self.collectionView.frame) - CGRectGetMinY(keyboardFrame));
+    if (![self.inputToolbar.contentView.textView isFirstResponder]) {
+        heightFromBottom = 0.0f;
     }
-
-    CGFloat heightFromBottom = CGRectGetMaxY(self.collectionView.frame) - CGRectGetMinY(keyboardFrame);
-
-    heightFromBottom = MAX(0.0f, heightFromBottom);
 
     [self jsq_setToolbarBottomLayoutGuideConstant:heightFromBottom];
 }
